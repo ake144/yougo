@@ -35,11 +35,11 @@ export class ErrorInterceptor implements NestInterceptor {
         } else if (error.code === 'ER_DUP_ENTRY') {
           status = HttpStatus.CONFLICT;
           message = 'Duplicate entry';
-          details = 'A record with this information already exists';
+          // details = 'A record with this information already exists';
         } else if (error.code === 'ER_NO_REFERENCED_ROW_2') {
           status = HttpStatus.BAD_REQUEST;
           message = 'Referenced record not found';
-          details = 'The referenced record does not exist';
+          // details = 'The referenced record does not exist';
         }
 
         const errorResponse = {
@@ -47,7 +47,7 @@ export class ErrorInterceptor implements NestInterceptor {
           message,
           timestamp: new Date().toISOString(),
           path: context.switchToHttp().getRequest().url,
-          ...(details && { details }),
+          // ...(details && { details: details as string }),
         };
 
         return throwError(() => new HttpException(errorResponse, status));

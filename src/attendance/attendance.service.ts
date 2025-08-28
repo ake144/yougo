@@ -64,13 +64,12 @@ export class AttendanceService {
         return await this.attendanceRepository.save(existing);
       } else {
         // Create new record
-        const attendance = this.attendanceRepository.create({
-          userId,
-          date: attendanceDate,
-          isPresent,
-          serviceType: serviceType || null,
-          notes: notes || null
-        });
+        const attendance = new Attendance();
+        attendance.userId = userId;
+        attendance.date = attendanceDate;
+        attendance.isPresent = isPresent;
+        if (serviceType !== undefined) attendance.serviceType = serviceType;
+        if (notes !== undefined) attendance.notes = notes;
         return await this.attendanceRepository.save(attendance);
       }
     } catch (error) {
