@@ -44,11 +44,17 @@ export class AuthController {
   @Get('me')
   async me(@Req() req: Request) {
     const token = req.cookies?.[COOKIE_NAME];
+
+    console.log('token', token);
+
     if (!token) {
       throw new UnauthorizedException('Not authenticated');
     }
 
     const user = await this.authService.verify(token);
+
+
+
     if (!user) {
       throw new UnauthorizedException('Invalid token');
     }

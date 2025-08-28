@@ -56,8 +56,8 @@ export class AuthService {
         email: user.email, 
         phone: user.phone,
         role: user.role
-      });
-      
+      }, { secret: process.env.JWT_SECRET });
+
       return { user, token };
     } catch (error) {
       if (error instanceof BadRequestException) {
@@ -69,7 +69,8 @@ export class AuthService {
 
   async verify(token: string): Promise<User | null> {
     try {
-      const decoded = await this.jwtService.verifyAsync(token);
+      const decoded = await this.jwtService.verifyAsync(token, { secret: process.env.JWT_SECRET });
+    
       const userId = decoded.sub as string;
       
       if (!userId) {
