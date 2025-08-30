@@ -51,12 +51,22 @@ export class AuthService {
         throw new BadRequestException('Failed to create or update user');
       }
 
+      // Ensure user has a valid ID
+      if (!user.id) {
+        console.error('User created without ID:', user);
+        throw new BadRequestException('User ID is missing');
+      }
+
+      console.log('Creating JWT token for user:', { id: user.id, name: user.name, role: user.role });
+
       const token = await this.jwtService.signAsync({ 
         sub: user.id, 
         email: user.email, 
         phone: user.phone,
         role: user.role
-      }, { secret: process.env.JWT_SECRET });
+      });
+
+      console.log('JWT token created successfully for user ID:', user.id);
 
       return { user, token };
     } catch (error) {
@@ -69,16 +79,40 @@ export class AuthService {
 
   async verify(token: string): Promise<User | null> {
     try {
-      const decoded = await this.jwtService.verifyAsync(token, { secret: process.env.JWT_SECRET });
+      console.log('Verifying JWT token...');
+      
+      // Use the JWT service with proper secret
+      const decoded = await this.jwtService.verifyAsync(token);
     
+      console.log('Decoded token:', decoded);
+      console.log('Token payload keys:', Object.keys(decoded));
+      
       const userId = decoded.sub as string;
+      console.log('Extracted user ID from token:', userId);
       
       if (!userId) {
+        console.log('No user ID in token - sub field is empty');
         return null;
       }
       
-      return await this.usersService.findById(userId);
+      if (userId === '') {
+        console.log('User ID is empty string');
+        return null;
+      }
+      
+      console.log('Looking up user with ID:', userId);
+      const user = await this.usersService.findById(userId);
+      
+      if (!user) {
+        console.log('User not found for ID:', userId);
+        return null;
+      }
+      
+      console.log('User found successfully:', { id: user.id, name: user.name, role: user.role });
+      return user;
     } catch (error) {
+      console.log('JWT verification failed:', error.message);
+      console.log('Error details:', error);
       return null;
     }
   }

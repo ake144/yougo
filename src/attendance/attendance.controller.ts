@@ -7,13 +7,16 @@ import {
   Param, 
   Body,
   HttpStatus,
-  HttpCode
+  HttpCode,
+  UseGuards
 } from '@nestjs/common';
 import { AttendanceService } from './attendance.service';
 import { MarkAttendanceDto } from './dto/mark-attendance.dto';
 import { Attendance } from '../entities/attendance.entity';
+import { JwtAuthGuard } from '../auth/jwt.guard';
 
 @Controller('attendance')
+@UseGuards(JwtAuthGuard)
 export class AttendanceController {
   constructor(private readonly attendanceService: AttendanceService) {}
 
