@@ -7,8 +7,10 @@ import { HealthController } from './health.controller';
 import { UsersModule } from './users/users.module';
 import { AttendanceModule } from './attendance/attendance.module';
 import { AuthModule } from './auth/auth.module';
+import { PrayerRequestsModule } from './prayer-requests/prayer-requests.module';
 import { User } from './entities/user.entity';
 import { Attendance } from './entities/attendance.entity';
+import { PrayerRequest } from './entities/prayer-request.entity';
 
 @Module({
   imports: [
@@ -21,7 +23,7 @@ import { Attendance } from './entities/attendance.entity';
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
         url: configService.get('DATABASE_URL'),
-        entities: [User, Attendance],
+        entities: [User, Attendance, PrayerRequest],
         synchronize: configService.get('NODE_ENV') !== 'production',
         logging: configService.get('NODE_ENV') !== 'production',
         dropSchema: false,
@@ -50,6 +52,7 @@ import { Attendance } from './entities/attendance.entity';
     UsersModule,
     AttendanceModule,
     AuthModule,
+    PrayerRequestsModule,
   ],
   controllers: [AppController, HealthController],
   providers: [AppService],
