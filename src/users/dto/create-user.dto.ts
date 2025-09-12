@@ -43,4 +43,8 @@ export class CreateUserDto {
   @IsString()
   @IsOptional()
   occupation?: string;
+
+  @IsString()
+  @IsOptional()
+  password?: string;
 } 

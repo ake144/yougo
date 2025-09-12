@@ -13,33 +13,54 @@ export class AuthService {
   ) {}
 
 async login(loginDto: LoginDto): Promise<{ user: User; token: string }> {
-  const { email, phone, password } = loginDto;
+  const { email, phone, password, name } = loginDto;
 
-  // Require at least one contact info
   if (!email && !phone) {
     throw new BadRequestException('Either email or phone must be provided');
   }
 
   try {
-    const user = await this.usersService.findByEmailOrPhone(email, phone);
+    let user = await this.usersService.findByEmailOrPhone(email, phone);
 
     if (!user) {
-      throw new UnauthorizedException('Invalid credentials: user not found');
-    }
-
-    // 🔐 If Admin → must validate password
-    if (user.role === Role.ADMIN) {
-      if (!password) {
-        throw new UnauthorizedException('Password is required for admin login');
+      // Signup flow
+      if (!name?.trim()) {
+        throw new UnauthorizedException('Name is required for new users');
       }
 
-      const isValid = await this.usersService.verifyPassword(user.id, password);
-      if (!isValid) {
-        throw new UnauthorizedException('Invalid password');
+      if (password) {
+        // If password is provided, assume admin registration
+        user = await this.usersService.create({
+          name: name.trim(),
+          email,
+          phone,
+          role: Role.ADMIN,
+          password,
+        });
+      } else {
+        // Normal user registration
+        user = await this.usersService.create({
+          name: name.trim(),
+          email,
+          phone,
+          role: Role.USER,
+        });
+      }
+    } else {
+      // Login flow
+      if (user.role === Role.ADMIN) {
+        if (!password) {
+          throw new UnauthorizedException('Password is required for admin login');
+        }
+
+        const isValid = await this.usersService.verifyPassword(user.id, password);
+        if (!isValid) {
+          throw new UnauthorizedException('Invalid password');
+        }
       }
     }
 
-    // ✅ If User → no password required (optional)
+    // Generate JWT
     const token = await this.jwtService.signAsync({
       sub: user.id,
       email: user.email,
@@ -55,6 +76,7 @@ async login(loginDto: LoginDto): Promise<{ user: User; token: string }> {
     throw new BadRequestException('Login failed');
   }
 }
+
 
 
   
