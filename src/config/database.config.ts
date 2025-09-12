@@ -1,6 +1,6 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { User } from '../entities/user.entity';
-import { Attendance } from '../entities/attendance.entity';
+import { PrayerRequest } from 'src/entities/prayer-request.entity';
 
 export const databaseConfig: TypeOrmModuleOptions = {
   type: 'mysql',
@@ -9,7 +9,7 @@ export const databaseConfig: TypeOrmModuleOptions = {
   username: process.env.DB_USER || 'root',
   password: process.env.DB_PASSWORD || '',
   database: process.env.DB_NAME || 'yougo_church',
-  entities: [User, Attendance],
+  entities: [User, PrayerRequest],
   synchronize: false, // Disable auto-sync to prevent data loss
   logging: process.env.NODE_ENV !== 'production',
   dropSchema: false, // Never drop schema automatically

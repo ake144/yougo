@@ -6,11 +6,11 @@ export class CreatePrayerRequestDto {
   @MaxLength(255)
   name: string;
 
-  @IsEmail()
+
   @IsOptional()
   email?: string;
 
-  @IsPhoneNumber()
+
   @IsOptional()
   phone?: string;
 

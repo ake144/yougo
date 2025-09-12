@@ -30,14 +30,11 @@ export class PrayerRequestsController {
   @UseGuards(JwtAuthGuard)
   async findAll(
     @Query('status') status?: string,
-    @Query('type') type?: string,
   ) {
-    if (status) {
+    if (status) { 
       return await this.prayerRequestsService.findByStatus(status);
     }
-    if (type) {
-      return await this.prayerRequestsService.findByType(type);
-    }
+
     return await this.prayerRequestsService.findAll();
   }
 

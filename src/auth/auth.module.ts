@@ -5,10 +5,12 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { UsersModule } from '../users/users.module';
 import { JwtAuthGuard } from './jwt.guard';
+import { PrayerRequestsModule } from 'src/prayer-requests/prayer-requests.module';
 
 @Module({
   imports: [
     forwardRef(() => UsersModule),
+    forwardRef(() => PrayerRequestsModule),
     ConfigModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],

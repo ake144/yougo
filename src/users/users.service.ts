@@ -1,9 +1,13 @@
-import { Injectable, NotFoundException, ConflictException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException, BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Like, ILike } from 'typeorm';
 import { User, Role, MaritalStatus, Gender } from '../entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import * as bcrypt from 'bcrypt';
+
+
+
 
 @Injectable()
 export class UsersService {
@@ -31,6 +35,7 @@ export class UsersService {
       throw new BadRequestException('Failed to fetch user');
     }
   }
+
 
   async findByEmailOrPhone(email?: string, phone?: string): Promise<User | null> {
     if (!email && !phone) {
@@ -212,5 +217,14 @@ export class UsersService {
     } catch (error) {
       throw new BadRequestException('Failed to get users count');
     }
+  }
+
+
+  async verifyPassword(userId: string, password: string): Promise<boolean> {
+           const user = await this.userRepository.findOne({ where: { id: userId } });
+            if (!user) {
+              throw new UnauthorizedException('User not found');
+            }
+            return bcrypt.compare(password, user.password);
   }
 } 

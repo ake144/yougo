@@ -4,6 +4,7 @@ import { UsersService } from '../users/users.service';
 import { User, Role } from '../entities/user.entity';
 import { LoginDto } from './dto/login.dto';
 
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -11,71 +12,53 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async login(loginDto: LoginDto): Promise<{ user: User; token: string }> {
-    const { email, phone, name } = loginDto;
-    
-    if (!loginDto.hasContactInfo) {
-      throw new BadRequestException('Either email or phone must be provided');
-    }
-    
-    if (!name || !name.trim()) {
-      throw new BadRequestException('Name is required');
-    }
+async login(loginDto: LoginDto): Promise<{ user: User; token: string }> {
+  const { email, phone, password } = loginDto;
 
-    try {
-      let user = await this.usersService.findByEmailOrPhone(email, phone);
-
-      if (!user) {
-        // Create new user record
-        const userData = {
-          name: name.trim(),
-          email: email || undefined,
-          phone: phone || undefined,
-          role: Role.USER,
-        };
-
-        // Generate placeholder email if none provided
-        if (!email && phone) {
-          userData.email = `user_${Date.now()}@placeholder.com`;
-        }
-
-        user = await this.usersService.create(userData);
-      } else {
-        // Update existing user's name if provided and different
-        if (name.trim() !== user.name) {
-          user = await this.usersService.update(user.id, { name: name.trim() });
-        }
-      }
-
-      if (!user) {
-        throw new BadRequestException('Failed to create or update user');
-      }
-
-      // Ensure user has a valid ID
-      if (!user.id) {
-        console.error('User created without ID:', user);
-        throw new BadRequestException('User ID is missing');
-      }
-
-      console.log('Creating JWT token for user:', { id: user.id, name: user.name, role: user.role });
-
-      const token = await this.jwtService.signAsync({ 
-        sub: user.id, 
-        email: user.email, 
-        phone: user.phone,
-        role: user.role
-      });
-
-      console.log('JWT token created successfully for user ID:', user.id);
-
-      return { user, token };
-    } catch (error) {
-      if (error instanceof BadRequestException) {
-        throw error;
-      }
-      throw new BadRequestException('Login failed');
-    }
+  // Require at least one contact info
+  if (!email && !phone) {
+    throw new BadRequestException('Either email or phone must be provided');
   }
+
+  try {
+    const user = await this.usersService.findByEmailOrPhone(email, phone);
+
+    if (!user) {
+      throw new UnauthorizedException('Invalid credentials: user not found');
+    }
+
+    // 🔐 If Admin → must validate password
+    if (user.role === Role.ADMIN) {
+      if (!password) {
+        throw new UnauthorizedException('Password is required for admin login');
+      }
+
+      const isValid = await this.usersService.verifyPassword(user.id, password);
+      if (!isValid) {
+        throw new UnauthorizedException('Invalid password');
+      }
+    }
+
+    // ✅ If User → no password required (optional)
+    const token = await this.jwtService.signAsync({
+      sub: user.id,
+      email: user.email,
+      phone: user.phone,
+      role: user.role,
+    });
+
+    return { user, token };
+  } catch (error) {
+    if (error instanceof BadRequestException || error instanceof UnauthorizedException) {
+      throw error;
+    }
+    throw new BadRequestException('Login failed');
+  }
+}
+
+
+  
+
 
   async verify(token: string): Promise<User | null> {
     try {

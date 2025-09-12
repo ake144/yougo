@@ -3,7 +3,7 @@ import { IsString, IsEmail, IsOptional, IsNotEmpty } from 'class-validator';
 export class LoginDto {
   @IsString()
   @IsOptional()
-  name?: string;
+  password?: string;
 
   @IsEmail()
   @IsOptional()
@@ -12,6 +12,8 @@ export class LoginDto {
   @IsString()
   @IsOptional()
   phone?: string;
+
+
 
   @IsNotEmpty({ message: 'Either email or phone must be provided' })
   get hasContactInfo(): boolean {

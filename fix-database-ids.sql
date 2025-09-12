@@ -14,21 +14,6 @@ ALTER TABLE User MODIFY COLUMN id VARCHAR(36) NOT NULL;
 -- Update any existing users with empty IDs to have proper UUIDs
 UPDATE User SET id = UUID() WHERE id IS NULL OR id = '';
 
--- Fix Attendance table structure
-ALTER TABLE Attendance MODIFY COLUMN id VARCHAR(36) NOT NULL;
-ALTER TABLE Attendance MODIFY COLUMN userId VARCHAR(36) NOT NULL;
-
--- Update any existing attendance records with empty IDs
-UPDATE Attendance SET id = UUID() WHERE id IS NULL OR id = '';
-
--- Ensure foreign key constraints are properly set
-ALTER TABLE Attendance 
-DROP FOREIGN KEY IF EXISTS Attendance_ibfk_1;
-
-ALTER TABLE Attendance 
-ADD CONSTRAINT Attendance_ibfk_1 
-FOREIGN KEY (userId) REFERENCES User(id) ON DELETE CASCADE;
-
 -- Insert a test admin user if none exists
 INSERT IGNORE INTO User (id, name, email, phone, role, createdAt, updatedAt) VALUES (
     UUID(),
@@ -44,9 +29,6 @@ INSERT IGNORE INTO User (id, name, email, phone, role, createdAt, updatedAt) VAL
 SELECT 'Fixed User IDs:' as Status;
 SELECT id, name, email, role FROM User;
 
-SELECT 'Fixed Attendance IDs:' as Status;
-SELECT id, userId, date, isPresent FROM Attendance;
 
 -- Show table structure
 DESCRIBE User;
-DESCRIBE Attendance; 

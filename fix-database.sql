@@ -4,6 +4,7 @@ USE yougo_church;
 -- Drop existing tables to recreate them properly
 DROP TABLE IF EXISTS `Attendance`;
 DROP TABLE IF EXISTS `User`;
+DROP TABLE IF EXISTS `PrayerRequest`;
 
 -- Recreate User table without problematic constraints
 CREATE TABLE `User` (
@@ -11,7 +12,6 @@ CREATE TABLE `User` (
   `name` varchar(255) NOT NULL,
   `email` varchar(255) DEFAULT NULL,
   `phone` varchar(20) DEFAULT NULL,
-  `qrCode` varchar(255) DEFAULT NULL,
   `profilePic` varchar(500) DEFAULT NULL,
   `age` int DEFAULT NULL,
   `maritalStatus` varchar(50) DEFAULT NULL,
@@ -26,22 +26,21 @@ CREATE TABLE `User` (
   KEY `IDX_User_phone` (`phone`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Recreate Attendance table
-CREATE TABLE `Attendance` (
+
+CREATE TABLE `PrayerRequest` (
   `id` varchar(36) NOT NULL,
-  `date` datetime NOT NULL,
-  `isPresent` tinyint(1) NOT NULL DEFAULT 0,
-  `userId` varchar(36) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `phone` varchar(20) DEFAULT NULL,
+  `prayerRequest` varchar(255) DEFAULT NULL,
+  `notes` text DEFAULT NULL,
+  `isAnonymous` boolean DEFAULT FALSE,
   `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `IDX_Attendance_userId_date` (`userId`, `date`),
-  KEY `IDX_Attendance_userId` (`userId`),
-  KEY `IDX_Attendance_date` (`date`),
-  CONSTRAINT `FK_Attendance_User` FOREIGN KEY (`userId`) REFERENCES `User` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Show the fixed tables
 SHOW TABLES;
 DESCRIBE `User`;
-DESCRIBE `Attendance`; 
+DESCRIBE `PrayerRequest`;

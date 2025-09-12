@@ -11,7 +11,6 @@ CREATE TABLE User (
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) UNIQUE,
     phone VARCHAR(20) UNIQUE,
-    qrCode VARCHAR(255),
     profilePic VARCHAR(500),
     age INT UNSIGNED,
     maritalStatus ENUM('Single', 'Married', 'Divorced', 'Widowed'),
@@ -30,27 +29,20 @@ CREATE TABLE User (
 );
 
 -- Create Attendance table with proper UUID handling
-CREATE TABLE Attendance (
+CREATE TABLE PrayerRequest (
     id VARCHAR(36) PRIMARY KEY DEFAULT (UUID()),
-    date DATE NOT NULL,
-    isPresent BOOLEAN DEFAULT TRUE NOT NULL,
-    userId VARCHAR(36) NOT NULL,
-    serviceType VARCHAR(255),
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255),
+    phone VARCHAR(20),
+    prayerRequest VARCHAR(255),
     notes TEXT,
+    isAnonymous BOOLEAN DEFAULT FALSE,
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    
-    -- Foreign key constraint
-    FOREIGN KEY (userId) REFERENCES User(id) ON DELETE CASCADE,
-    
-    -- Unique constraint to prevent duplicate attendance records
-    UNIQUE KEY unique_user_date (userId, date),
-    
-    -- Indexes for better performance
-    INDEX idx_attendance_userId (userId),
-    INDEX idx_attendance_date (date),
-    INDEX idx_attendance_isPresent (isPresent)
+
+    INDEX idx_prayer_request_date (requestDate);
 );
+
 
 -- Insert sample admin user with explicit UUID
 INSERT INTO User (id, name, email, phone, role, createdAt, updatedAt) VALUES (
@@ -74,24 +66,22 @@ INSERT INTO User (id, name, email, phone, role, createdAt, updatedAt) VALUES (
     NOW()
 );
 
--- Insert sample attendance records
-INSERT INTO Attendance (id, date, isPresent, userId, serviceType, notes, createdAt, updatedAt)
-SELECT 
+
+Insert INTO PrayerRequest (id, name, email, phone, prayerRequest, notes, isAnonymous, createdAt, updatedAt) VALUES (
     UUID(),
-    CURDATE(),
-    TRUE,
-    u.id,
-    'Sunday Service',
-    'Regular Sunday worship service',
+    'Jane Smith',
+    'jane.smith@example.com',
+    '+1234567892',
+    'Pray for my family',
+    'Urgent prayer request for family issues',
+    FALSE,
     NOW(),
     NOW()
-FROM User u
-WHERE u.role = 'USER'
-LIMIT 1;
+);
 
 -- Display table structure
 DESCRIBE User;
-DESCRIBE Attendance;
+
 
 -- Display sample data
 SELECT 'User Table:' as TableName;
