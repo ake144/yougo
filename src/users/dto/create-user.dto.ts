@@ -16,10 +16,6 @@ export class CreateUserDto {
 
   @IsString()
   @IsOptional()
-  qrCode?: string;
-
-  @IsString()
-  @IsOptional()
   profilePic?: string;
 
   @IsInt()

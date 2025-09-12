@@ -1,5 +1,4 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, CreateDateColumn, UpdateDateColumn, Index } from 'typeorm';
-import { Attendance } from './attendance.entity';
 
 export enum Role {
   USER = 'USER',
@@ -9,14 +8,11 @@ export enum Role {
 export enum MaritalStatus {
   SINGLE = 'Single',
   MARRIED = 'Married',
-  DIVORCED = 'Divorced',
-  WIDOWED = 'Widowed',
 }
 
 export enum Gender {
   MALE = 'Male',
-  FEMALE = 'Female',
-  OTHER = 'Other',
+  FEMALE = 'Female'
 }
 
 @Entity('User')
@@ -48,13 +44,6 @@ export class User {
     unique: true 
   })
   phone: string;
-
-  @Column({ 
-    type: 'varchar', 
-    length: 255, 
-    nullable: true 
-  })
-  qrCode: string;
 
   @Column({ 
     type: 'varchar', 
@@ -109,11 +98,4 @@ export class User {
 
   @UpdateDateColumn()
   updatedAt: Date;
-
-  // Relations
-  @OneToMany(() => Attendance, attendance => attendance.user, {
-    cascade: true,
-    onDelete: 'CASCADE'
-  })
-  attendance: Attendance[];
 } 

@@ -57,7 +57,6 @@ export class PrayerRequestsService {
 
   async findByType(type: string): Promise<PrayerRequest[]> {
     return await this.prayerRequestRepository.find({
-      where: { type: type as any },
       order: { createdAt: 'DESC' },
     });
   }

@@ -1,15 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, Index } from 'typeorm';
 
-export enum PrayerRequestType {
-  PERSONAL = 'Personal',
-  FAMILY = 'Family',
-  HEALTH = 'Health',
-  FINANCIAL = 'Financial',
-  SPIRITUAL = 'Spiritual',
-  WORK = 'Work',
-  RELATIONSHIP = 'Relationship',
-  OTHER = 'Other',
-}
 
 export enum PrayerRequestStatus {
   PENDING = 'Pending',
@@ -22,7 +12,6 @@ export enum PrayerRequestStatus {
 @Index(['email'], { where: 'email IS NOT NULL' })
 @Index(['phone'], { where: 'phone IS NOT NULL' })
 @Index(['status'])
-@Index(['type'])
 export class PrayerRequest {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -48,18 +37,12 @@ export class PrayerRequest {
   })
   phone: string;
 
-  @Column({ 
-    type: 'enum', 
-    enum: PrayerRequestType, 
-    default: PrayerRequestType.PERSONAL 
-  })
-  type: PrayerRequestType;
 
   @Column({ 
     type: 'text', 
     nullable: false 
   })
-  message: string;
+  prayerRequest: string;
 
   @Column({ 
     type: 'enum', 

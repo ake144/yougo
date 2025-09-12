@@ -1,5 +1,4 @@
 import { IsString, IsEmail, IsOptional, IsEnum, IsBoolean, IsPhoneNumber, MinLength, MaxLength } from 'class-validator';
-import { PrayerRequestType } from '../../entities/prayer-request.entity';
 
 export class CreatePrayerRequestDto {
   @IsString()
@@ -15,14 +14,11 @@ export class CreatePrayerRequestDto {
   @IsOptional()
   phone?: string;
 
-  @IsEnum(PrayerRequestType)
-  @IsOptional()
-  type?: PrayerRequestType;
 
   @IsString()
   @MinLength(10)
   @MaxLength(2000)
-  message: string;
+  prayerRequest: string;
 
   @IsBoolean()
   @IsOptional()

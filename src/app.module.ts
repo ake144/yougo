@@ -5,11 +5,9 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { HealthController } from './health.controller';
 import { UsersModule } from './users/users.module';
-import { AttendanceModule } from './attendance/attendance.module';
 import { AuthModule } from './auth/auth.module';
 import { PrayerRequestsModule } from './prayer-requests/prayer-requests.module';
 import { User } from './entities/user.entity';
-import { Attendance } from './entities/attendance.entity';
 import { PrayerRequest } from './entities/prayer-request.entity';
 
 @Module({
@@ -23,7 +21,7 @@ import { PrayerRequest } from './entities/prayer-request.entity';
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
         url: configService.get('DATABASE_URL'),
-        entities: [User, Attendance, PrayerRequest],
+        entities: [User, PrayerRequest],
         synchronize: configService.get('NODE_ENV') !== 'production',
         logging: configService.get('NODE_ENV') !== 'production',
         dropSchema: false,
@@ -50,7 +48,6 @@ import { PrayerRequest } from './entities/prayer-request.entity';
       inject: [ConfigService],
     }),
     UsersModule,
-    AttendanceModule,
     AuthModule,
     PrayerRequestsModule,
   ],

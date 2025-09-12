@@ -15,8 +15,7 @@ export class UsersService {
   async findAll(): Promise<User[]> {
     try {
       return await this.userRepository.find({
-        order: { name: 'ASC' },
-        relations: ['attendance']
+        order: { name: 'ASC' }
       });
     } catch (error) {
       throw new BadRequestException('Failed to fetch users');
@@ -26,8 +25,7 @@ export class UsersService {
   async findById(id: string): Promise<User | null> {
     try {
       return await this.userRepository.findOne({ 
-        where: { id },
-        relations: ['attendance']
+        where: { id }
       });
     } catch (error) {
       throw new BadRequestException('Failed to fetch user');
@@ -45,21 +43,18 @@ export class UsersService {
           where: [
             { email },
             { phone }
-          ],
-          relations: ['attendance']
+          ]
         });
       }
 
       if (email) {
         return await this.userRepository.findOne({ 
-          where: { email },
-          relations: ['attendance']
+          where: { email }
         });
       }
 
       return await this.userRepository.findOne({ 
-        where: { phone },
-        relations: ['attendance']
+          where: { phone }
       });
     } catch (error) {
       throw new BadRequestException('Failed to find user');
@@ -74,8 +69,7 @@ export class UsersService {
           { email: ILike(`%${query}%`) },
           { phone: ILike(`%${query}%`) }
         ],
-        order: { name: 'ASC' },
-        relations: ['attendance']
+        order: { name: 'ASC' }
       });
     } catch (error) {
       throw new BadRequestException('Failed to search users');
